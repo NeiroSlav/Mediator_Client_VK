@@ -18,5 +18,4 @@ def start_handle_events(vk_session: VkApi):
 # хендлер сообщения в личку бота
 def handle_personal_message(message: VkEventType, vk_api_method: VkApiMethod):
     message_dto = MessageDTO.parse_vk(message, vk_api_method)
-    print(message_dto)
     send_to_server(message_dto)

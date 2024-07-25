@@ -16,8 +16,6 @@ class MessageDTO(BaseModel):
     @classmethod  # фабричный метод, создающий объект из сообщения
     def parse_vk(cls, message: Event, vk_api_method: VkApiMethod):
 
-        print(message.message_id, '\n\n\n')
-
         text = ''
         image = None
         meta = {}
@@ -60,5 +58,5 @@ class MessageDTO(BaseModel):
                 photo_url = max_size_photo['url']
                 message_photo_urls.append(photo_url)
 
-        print(message_photo_urls[0])
-        return message_photo_urls[0] if message_photo_urls else None
+        if message_photo_urls:
+            return message_photo_urls[0]
