@@ -14,13 +14,13 @@ class MessageDTO(BaseModel):
 
 
     @classmethod  # фабричный метод, создающий объект из сообщения
-    def parse_vk(cls, message: Event, vk_api_method: VkApiMethod):
+    def parse_vk(cls, message: Event, vk: VkApiMethod):
 
         text = ''
         image = None
         meta = {}
-        sender_name = cls._get_sender_name(message, vk_api_method)
-        image = cls._get_photos_url(message, vk_api_method)
+        sender_name = cls._get_sender_name(message, vk)
+        image = cls._get_photos_url(message, vk)
 
 
         if message.message:  # если есть просто текст, берёт его
@@ -36,19 +36,19 @@ class MessageDTO(BaseModel):
         )
 
     @staticmethod
-    def _get_sender_name(message: Event, vk_api_method: VkApiMethod) -> str:
+    def _get_sender_name(message: Event, vk: VkApiMethod) -> str:
         
         # Получение информации о пользователе по его id
-        user_info = vk_api_method.users.get(user_ids=message.user_id)[0]
+        user_info = vk.users.get(user_ids=message.user_id)[0]
         
         # Извлечение имени и фамилии пользователя
         return f'{user_info['first_name']} {user_info['last_name']}'
 
     @staticmethod
-    def _get_photos_url(message: Event, vk_api_method: VkApiMethod) -> str | None:
+    def _get_photos_url(message: Event, vk: VkApiMethod) -> str | None:
 
         message_photo_urls = []
-        message_info = vk_api_method.messages.getById(message_ids=message.message_id)
+        message_info = vk.messages.getById(message_ids=message.message_id)
         attachment_list = message_info['items'][0]['attachments']
 
         for attachment in attachment_list:

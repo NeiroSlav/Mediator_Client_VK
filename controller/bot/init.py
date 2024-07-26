@@ -1,5 +1,4 @@
 from vk_api import VkApi
-from vk_api.longpoll import VkLongPoll
 from const import BOT_TOKEN
 from controller.bot.handlers import start_handle_events
 
