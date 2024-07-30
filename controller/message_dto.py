@@ -42,7 +42,7 @@ class MessageDTO(BaseModel):
         user_info = vk.users.get(user_ids=message.user_id)[0]
         
         # Извлечение имени и фамилии пользователя
-        return f'{user_info['first_name']} {user_info['last_name']}'
+        return f'{user_info["first_name"]} {user_info["last_name"]}'
 
     @staticmethod
     def _get_photos_url(message: Event, vk: VkApiMethod) -> str | None:
