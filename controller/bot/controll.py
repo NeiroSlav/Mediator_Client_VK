@@ -8,6 +8,8 @@ vk = vk_session.get_api()
 
 # отправка сообщения ботом
 def send_personal_message(message_dto: MessageDTO):
+    if not message_dto.text and not message_dto.image:
+         return
     try:
         vk.messages.send(
             user_id=message_dto.chat_id,
