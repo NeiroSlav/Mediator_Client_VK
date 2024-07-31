@@ -8,13 +8,17 @@ vk = vk_session.get_api()
 
 # отправка сообщения ботом
 def send_personal_message(message_dto: MessageDTO):
+    try:
+        vk.messages.send(
+            user_id=message_dto.chat_id,
+            random_id=0,
+            message=message_dto.text,
+            attachment=_load_image(message_dto.image),
+        )
+    except Exception as e:
+         print(message_dto)
+         raise e
 
-    vk.messages.send(
-        user_id=message_dto.chat_id,
-        random_id=0,
-        message=message_dto.text,
-        attachment=_load_image(message_dto.image),
-    )
 
 # Скачивание изображения, выгрузка в вк, получение его id
 def _load_image(image_url: str) -> str:
