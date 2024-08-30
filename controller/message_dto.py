@@ -16,11 +16,15 @@ class MessageDTO(BaseModel):
     @classmethod  # фабричный метод, создающий объект из сообщения
     def parse_vk(cls, message: Event, vk: VkApiMethod):
 
+        attachment_list = cls._get_attachment_list(message, vk)
+        if cls._check_invalid_attachments(attachment_list):
+            raise TypeError  # если в прикреплённых сторонние файлы
+
         text = ''
         image = None
         meta = {}
         sender_name = cls._get_sender_name(message, vk)
-        image = cls._get_photos_url(message, vk)
+        image = cls._get_photos_url(attachment_list)
 
 
         if message.message:  # если есть просто текст, берёт его
@@ -44,12 +48,22 @@ class MessageDTO(BaseModel):
         # Извлечение имени и фамилии пользователя
         return f'{user_info["first_name"]} {user_info["last_name"]}'
 
+    # получение списка прикреплённых файлов
     @staticmethod
-    def _get_photos_url(message: Event, vk: VkApiMethod) -> str | None:
-
-        message_photo_urls = []
+    def _get_attachment_list(message: Event, vk: VkApiMethod) -> list:
         message_info = vk.messages.getById(message_ids=message.message_id)
-        attachment_list = message_info['items'][0]['attachments']
+        return message_info['items'][0]['attachments']
+    
+    # проверяет, есть ли в прикреплённых файлах документы
+    @staticmethod
+    def _check_invalid_attachments(attachment_list) -> bool:
+        not_photos = filter(lambda a: a['type'] != 'photo', attachment_list)
+        return bool(list(not_photos))
+
+    # достаёт из списка прикреплённых файлов фото
+    @staticmethod
+    def _get_photos_url(attachment_list) -> str | None:
+        message_photo_urls = []
 
         for attachment in attachment_list:
             if attachment['type'] == 'photo':

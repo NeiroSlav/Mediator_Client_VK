@@ -3,6 +3,7 @@ from vk_api.vk_api import VkApiMethod
 from vk_api import VkApi
 from controller.message_dto import MessageDTO
 from controller.post.request import send_to_server
+from const import UNSUPPORTED_CONTENT_TEXT
 
 # начинает обрабатывать события
 def start_handle_events(vk_session: VkApi):
@@ -16,5 +17,13 @@ def start_handle_events(vk_session: VkApi):
 
 # хендлер сообщения в личку бота
 def handle_personal_message(message: VkEventType, vk: VkApiMethod):
-    message_dto = MessageDTO.parse_vk(message, vk)
-    send_to_server(message_dto)
+    try:
+        message_dto = MessageDTO.parse_vk(message, vk)
+        send_to_server(message_dto)
+    except TypeError:
+        vk.messages.send(  # ответит на сообщение пользователя
+            user_id=message.user_id,
+            reply_to=message.message_id,
+            random_id=0,
+            message=UNSUPPORTED_CONTENT_TEXT,  # что такой тип 
+        )
